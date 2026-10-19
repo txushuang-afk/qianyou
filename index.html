@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#090710">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="谦友社区">
+<title>谦友社区</title>
+<style>
+:root{--bg:#090710;--panel:#15111e;--panel2:#211a2c;--line:#2b2435;--purple:#9b43f2;--purple2:#c06cff;--muted:#9992a5;--white:#f7f3fb;--pink:#e22d91}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;overscroll-behavior:none}
+body{min-height:100dvh}
+button,input,textarea{font:inherit}
+button{cursor:pointer;color:inherit;border:0;touch-action:manipulation}
+button:active{transform:scale(.98);filter:brightness(1.12)}
+.app{max-width:480px;min-height:100dvh;margin:auto;background:linear-gradient(180deg,#0a0711,#090710 45%);padding-bottom:calc(86px + env(safe-area-inset-bottom));position:relative}
+.topbar{min-height:74px;padding:calc(14px + env(safe-area-inset-top)) 22px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1c1725}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:.2px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--pink);box-shadow:0 0 14px #e22d9160}
+.top-sub{color:#8c8495;font-size:13px}
+.page{display:none;padding:20px 20px 8px}
+.page.active{display:block}
+.hero{overflow:hidden;border:1px solid #30283a;border-radius:24px;background:var(--panel);box-shadow:0 8px 30px #0002;margin-bottom:20px}
+.hero-img{height:270px;background-size:cover;background-position:center 38%;position:relative;background-color:#100b19}
+.hero-img:after{content:"";position:absolute;inset:48% 0 0;background:linear-gradient(transparent,#15111e 94%)}
+.hero-info{padding:13px 16px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+.hero-title{font-size:18px;font-weight:800;line-height:1.45}
+.subline{color:var(--purple2);font-size:13px;margin-top:3px}
+.pill-btn{white-space:nowrap;background:linear-gradient(110deg,#9d39ed,#a33ef0);border-radius:28px;padding:12px 17px;font-weight:700;box-shadow:0 6px 18px #8e2ce533}
+.artist{display:flex;gap:16px;padding:16px;border:1px solid #30283a;background:var(--panel);border-radius:24px;margin-bottom:20px;align-items:center}
+.artist img{width:112px;height:146px;object-fit:cover;object-position:center 22%;border-radius:18px;background:#08070c}
+.artist-body{min-width:0}
+.artist-name{font-size:23px;font-weight:800;margin-bottom:9px}
+.spark{color:var(--purple2);font-size:19px}
+.bio{font-size:13px;line-height:1.8;color:#a7a0af;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.tag{border-radius:18px;background:#282230;color:#aaa2b3;font-size:11px;padding:5px 10px}
+.tag.purple{color:#c98cff;border:1px solid #7d32b6;background:#321843}
+.shortcuts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0 26px}
+.shortcut{height:126px;border-radius:22px;background:linear-gradient(155deg,#21192d,#17111f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:1px solid #382847;font-weight:700;font-size:15px;box-shadow:inset 0 1px 0 #ffffff08;transition:transform .15s,border-color .15s}
+.shortcut:active{transform:scale(.97);border-color:#9b43f2}
+.shortcut-icon{width:56px;height:56px;border-radius:19px;display:grid;place-items:center;background:linear-gradient(145deg,#38204b,#291833);color:#c06cff;border:1px solid #4b2c61;box-shadow:0 5px 16px #0003}
+.shortcut svg,.tab svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.section-head{display:flex;align-items:center;justify-content:space-between;font-size:20px;font-weight:800;margin:8px 0 17px}
+.more{font-size:14px;color:var(--purple2);font-weight:600}
+.event-card,.post,.profile-card,.empty,.setting-row{border:1px solid var(--line);background:var(--panel);border-radius:22px;overflow:hidden}
+.event-card{margin-bottom:16px;box-shadow:0 8px 24px #0002}
+.event-photo{height:156px;background:linear-gradient(130deg,#252038,#10111d);position:relative;display:flex;align-items:end;padding:14px;background-size:cover;background-position:center}
+.event-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#090710d9,transparent 75%)}
+.event-photo>*{z-index:1}
+.event-meta{padding:14px 16px}
+.event-name{font-size:17px;font-weight:800}
+.muted{color:var(--muted);font-size:13px;line-height:1.7}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.status-tag{font-size:11px;color:#e78aff;background:#321744;padding:5px 9px;border-radius:14px;white-space:nowrap}
+.outline-btn{background:#241b30;border:1px solid #563174;color:#d2a1ff;padding:9px 13px;border-radius:14px;font-size:12px}
+.bottom-nav{position:fixed;z-index:5;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);height:calc(72px + env(safe-area-inset-bottom));padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;align-items:center;background:#0b0812f5;border-top:1px solid #30283a;backdrop-filter:blur(18px)}
+.tab{width:20%;display:flex;flex-direction:column;align-items:center;gap:4px;color:#777180;font-size:11px;background:transparent}
+.tab.active{color:var(--purple)}
+.page-title{font-size:26px;font-weight:850;margin:3px 0 8px}
+.page-desc{color:var(--muted);font-size:13px;margin-bottom:20px}
+.post{padding:16px;margin-bottom:13px}
+.post-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#7131a5,#ed4c9d);font-weight:800}
+.post-name{font-size:14px;font-weight:700}
+.post-time{font-size:11px;color:var(--muted);margin-top:3px}
+.post-text{font-size:14px;line-height:1.8;white-space:pre-wrap}
+.post-actions{display:flex;gap:20px;color:#a69caf;margin-top:14px;font-size:13px}
+.post-actions button{background:transparent;color:inherit;padding:0}
+.compose{width:100%;padding:14px;background:#21172c;border:1px solid #4c2b66;border-radius:16px;color:#d9b4ff;margin-bottom:15px;text-align:left}
+.profile-card{padding:20px;margin-bottom:15px;display:flex;align-items:center;gap:14px}
+.profile-avatar{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:linear-gradient(135deg,#7430a6,#e22d91)}
+.profile-name{font-size:19px;font-weight:800}
+.checkin{padding:18px;background:linear-gradient(120deg,#29143c,#171020);border:1px solid #4a2a60;border-radius:20px;margin-bottom:17px}
+.checkin h3{margin:0 0 8px}
+.setting-row{padding:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-size:14px}
+.empty{text-align:center;padding:34px 15px;color:#938a9f;font-size:13px;line-height:1.8}
+.modal{display:none;position:fixed;inset:0;z-index:20;background:#000a;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.sheet{width:min(480px,100%);max-height:86dvh;overflow:auto;background:#17111f;border:1px solid #3a2b46;border-radius:25px 25px 0 0;padding:23px 20px calc(25px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 18px;font-size:21px}
+.field{width:100%;padding:14px;border-radius:13px;background:#0d0a13;border:1px solid #34283e;color:white;outline:none;margin-bottom:12px}
+.primary{width:100%;padding:14px;border-radius:15px;background:linear-gradient(100deg,#9637e8,#b34bf0);font-weight:800;margin-top:6px;color:#fff;border:0}
+.secondary{width:100%;padding:12px;background:transparent;color:#bba9c9}
+.tiny{font-size:11px;color:#8c8297;line-height:1.7;margin-top:12px}
+.switch{display:flex;gap:7px;margin:0 0 16px}
+.switch button{flex:1;padding:10px;background:#211a2a;border-radius:12px;color:#a89bb6}
+.switch button.on{background:#4a2265;color:#fff}
+.toast{position:fixed;z-index:50;bottom:100px;left:50%;transform:translateX(-50%);background:#35263e;border:1px solid #67407b;color:#fff;padding:11px 16px;border-radius:25px;font-size:13px;display:none;white-space:nowrap}
+.toast.show{display:block;animation:fade 2s forwards}
+@keyframes fade{0%,75%{opacity:1}100%{opacity:0}}
+.loading{text-align:center;padding:20px;color:#8c8297;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar"><div class="brand"><i class="dot"></i><span>谦友社区</span></div><div class="top-sub">万兽之王 · 巡回现场</div></header>
+  <main>
+    <section class="page active" id="home">
+      <div class="hero"><div class="hero-img" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/%E8%96%9B%E4%B9%8B%E8%B0%A6_%E5%A4%A9%E5%A4%96%E6%9D%A5%E7%89%A9%E4%B8%96%E7%95%8C%E5%B7%A1%E5%9B%9E%E6%BC%94%E5%94%B1%E4%BC%9A_20230521_%281%29_%28cropped_horizontal%29.jpg?width=800')"></div><div class="hero-info"><div><div class="hero-title">万兽之王 · 薛之谦巡回演唱会</div><div class="subline">全球谦友紫海盛宴，实时行程与抢票速递</div></div><button class="pill-btn" onclick="go('schedule')">查看行程</button></div></div>
+      <div class="shortcuts">
+        <button class="shortcut" onclick="go('schedule')"><span class="shortcut-icon"><svg viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18a2 2 0 0 1 2 2v2a2.5 2.5 0 0 0 0 5v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2.5 2.5 0 0 0 0-5z"/><path d="M9 8v2m0 2v2m0 2v1"/></svg></span>抢票</button>
+        <button class="shortcut" onclick="go('community')"><span class="shortcut-icon"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-3.5 2v-5A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg></span>社区</button>
+        <button class="shortcut" onclick="openAuth()"><span class="shortcut-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span>登录</button>
+      </div>
+      <div class="section-head"><span>社区热帖</span><button class="more" onclick="go('community')">进入社区 ›</button></div>
+      <div id="homePosts"><div class="loading">正在连接云端…</div></div>
+    </section>
+    
+    <section class="page" id="schedule">
+        <div class="page-title">巡演行程</div>
+        <div class="page-desc">目前为静态展示，后续可接入后台。</div>
+        <div class="event-card"><div class="event-meta"><div class="row"><div class="event-name">贵阳站</div><span class="status-tag">近期</span></div><div class="muted">2026年10月24日</div></div></div>
+        <div class="event-card"><div class="event-meta"><div class="row"><div class="event-name">厦门站</div><span class="status-tag">下一站</span></div><div class="muted">2026年10月31日</div></div></div>
+    </section>
+
+    <section class="page" id="community">
+        <div class="page-title">谦友社区</div>
+        <div class="page-desc">大家发的帖子会实时同步到云端。</div>
+        <button class="compose" onclick="openPost()">＋　发布一条动态</button>
+        <div id="posts"><div class="loading">加载中…</div></div>
+    </section>
+
+    <section class="page" id="mine">
+        <div class="page-title">我的</div>
+        <div class="profile-card">
+            <div class="profile-avatar" id="myAvatar">谦</div>
+            <div style="flex:1">
+                <div class="profile-name" id="myName">游客谦友</div>
+                <div class="muted" id="myEmail">未登录</div>
+            </div>
+            <button class="outline-btn" id="authBtn" onclick="openAuth()">登录 / 注册</button>
+            <button class="outline-btn" id="logoutBtn" onclick="logout()" style="display:none;color:#ff8fbf;border-color:#ff8fbf">退出</button>
+        </div>
+        <div class="checkin"><div class="row"><div><h3>每日签到 ✦</h3><div class="muted">积累专属积分</div></div><button class="pill-btn" onclick="toast('签到功能开发中')">立即签到</button></div></div>
+    </section>
+  </main>
+  
+  <nav class="bottom-nav">
+    <button class="tab active" data-tab="home" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-7H9v7H3z"/></svg><span>首页</span></button>
+    <button class="tab" data-tab="schedule" onclick="go('schedule')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><span>行程</span></button>
+    <button class="tab" data-tab="community" onclick="go('community')"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>社区</span></button>
+    <button class="tab" data-tab="mine" onclick="go('mine')"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span>我的</span></button>
+  </nav>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- 引入 Supabase 官方库 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const $=id=>document.getElementById(id);
+
+// 初始化 Supabase（去掉了你网址里多余的 /rest/v1/）
+const supabaseUrl = 'https://vkogajodhtztgmvnrhdf.supabase.co';
+const supabaseKey = 'sb_publishable_Y1irhDmdwb_0klRHmF3lvg_aqRaYBx3';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+let currentUser = null;
+
+// 页面切换
+function go(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===id));
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(id==='community') fetchPosts();
+}
+
+// 弹窗控制
+function openSheet(c){$('sheet').innerHTML=c;$('modal').classList.add('show');}
+function closeModal(){$('modal').classList.remove('show');}
+function toast(m){const el=$('toast');el.textContent=m;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2100);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// ================= 认证系统 (登录/注册) =================
+function openAuth(){
+    openSheet(`
+        <h2>加入谦友社区</h2>
+        <input class="field" id="authEmail" type="email" placeholder="邮箱地址">
+        <input class="field" id="authName" placeholder="昵称（仅注册需要）">
+        <input class="field" id="authPass" type="password" placeholder="密码（至少6位）">
+        <button class="primary" id="btnLogin" onclick="doAuth('login')">登录</button>
+        <button class="secondary" id="btnReg" onclick="doAuth('register')">注册新账号</button>
+        <button class="secondary" onclick="closeModal()" style="margin-top:10px">取消</button>
+    `);
+}
+
+async function doAuth(type) {
+    const email = $('authEmail').value.trim();
+    const pass = $('authPass').value;
+    const name = $('authName').value.trim();
+    
+    if(!email || !pass) { toast('请填写邮箱和密码'); return; }
+    if(pass.length < 6) { toast('密码至少6位'); return; }
+    
+    $('btnLogin').textContent = '处理中…';
+    $('btnReg').disabled = true;
+
+    if(type === 'register') {
+        if(!name) { toast('请填写昵称'); $('btnLogin').textContent='登录'; $('btnReg').disabled=false; return; }
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: pass,
+            options: { data: { display_name: name } }
+        });
+        if(error) toast('注册失败：' + error.message);
+        else { toast('注册成功，已自动登录'); closeModal(); updateAuthUI(); }
+    } else {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        if(error) toast('登录失败：' + error.message);
+        else { toast('登录成功'); closeModal(); updateAuthUI(); fetchPosts(); }
+    }
+    
+    $('btnLogin').textContent = '登录';
+    $('btnReg').disabled = false;
+}
+
+async function logout() {
+    await supabase.auth.signOut();
+    toast('已退出登录');
+    updateAuthUI();
+    fetchPosts();
+}
+
+function updateAuthUI() {
+    if(currentUser) {
+        const name = currentUser.user_metadata?.display_name || '谦友';
+        $('myName').textContent = name;
+        $('myEmail').textContent = currentUser.email;
+        $('myAvatar').textContent = name[0];
+        $('authBtn').style.display = 'none';
+        $('logoutBtn').style.display = 'block';
+    } else {
+        $('myName').textContent = '游客谦友';
+        $('myEmail').textContent = '未登录';
+        $('myAvatar').textContent = '谦';
+        $('authBtn').style.display = 'block';
+        $('logoutBtn').style.display = 'none';
+    }
+}
+
+// 监听登录状态变化
+supabase.auth.onAuthStateChange((event, session) => {
+    currentUser = session;
+    updateAuthUI();
+});
+
+// ================= 发帖与读取系统 =================
+function openPost() {
+    if(!currentUser) { toast('请先在“我的”页面登录'); return; }
+    openSheet(`
+        <h2>发布动态</h2>
+        <textarea class="field" id="postText" rows="5" placeholder="分享你的故事…"></textarea>
+        <button class="primary" id="btnSubmitPost" onclick="submitPost()">发布到云端</button>
+        <button class="secondary" onclick="closeModal()">取消</button>
+    `);
+}
+
+async function submitPost() {
+    const text = $('postText').value.trim();
+    if(!text) { toast('内容不能为空'); return; }
+    
+    const btn = $('btnSubmitPost');
+    btn.textContent = '发送中…';
+    
+    const name = currentUser.user_metadata?.display_name || '谦友';
+    
+    const { error } = await supabase.from('posts').insert([{
+        content: text,
+        user_id: currentUser.user.id,
+        author_name: name
+    }]);
+    
+    if(error) {
+        toast('发送失败，请检查是否建表：' + error.message);
+        btn.textContent = '重试';
+    } else {
+        toast('发布成功');
+        closeModal();
+        fetchPosts();
+        go('community');
+    }
+}
+
+async function fetchPosts() {
+    const list = $('posts');
+    const homeList = $('homePosts');
+    
+    Date const { data, error } = await sup(pabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+    if(error) {
+        list.innerHTML = `<div class="empty">读取失败：${error.message}<br>请确保执行了 SQL 建表。</div>`;
+        return;
+    }
+    
+    if(!data || data.length === 0) {
+        list.innerHTML = '<div class="empty"><div class="empty-icon">✧</div>暂无动态，快来发第一条吧</div>';
+        if(homeList) homeList.innerHTML = '<div class="empty">暂无动态</div>';
+        return;
+    }
+    
+    // 渲染列表
+    list.innerHTML = data.map(p => {
+        const time = new.created_at).toLocaleString('zh-CN', {hour12:false});
+        const isMine = currentUser && currentUser.user.id === p.user_id;
+        return `
+        <div class="post">
+            <div class="post-head">
+                <div class="avatar">${esc(p.author_name[0])}</div>
+                <div style="flex:1">
+                    <div class="post-name">${esc(p.author_name)}</div>
+                    <div class="post-time">${time}</div>
+                </div>
+                ${isMine ? `<button class="secondary" style="width:auto;padding:4px;color:#ff8fbf" onclick="deletePost(${p.id})">删除</button>` : ''}
+            </div>
+            <div class="post-text">${esc(p.content)}</div>
+        </div>`;
+    }).join('');
+
+    // 首页显示最新一条
+    if(homeList) {
+        homeList.innerHTML = `
+        <div class="post">
+            <div class="post-text">${esc(data[0].content)}</div>
+            <div class="muted" style="margin-top:8px">来自：${esc(data[0].author_name)}</div>
+        </div>`;
+    }
+}
+
+async function deletePost(id) {
+    if(!confirm('确定删除这条动态吗？')) return;
+    const { error } = await supabase.from('posts').delete().eq('id', id);
+    if(error) toast('删除失败：' + error.message);
+    else { toast('已删除'); fetchPosts(); }
+}
+
+// ================= 启动 =================
+function init() {
+    fetchPosts();
+    
+    // 检查当前用户
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        currentUser = session;
+        updateAuthUI();
+    });
+}
+init();
+</script>
+</body>
+</html>
